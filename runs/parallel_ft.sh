@@ -4,9 +4,9 @@ pairs=${2:-"de-en"}
 
 # random port between 30000 and 50000
 port=$(( RANDOM % (50000 - 30000 + 1 ) + 30000 ))
-CUDA_VISIBLE_DEVICES=0,1,2,3,5,6,7 accelerate launch --main_process_port ${port} --config_file configs/deepspeed_train_config.yaml \
+accelerate launch --main_process_port ${port} --config_file configs/deepspeed_train_config.yaml \
      run_llmmt.py \
-    --model_name_or_path ./official_models/ALMA-7B-Pretrain \
+    --model_name_or_path /gpfs/share/home/1400010636/wangshuhe/work/models/ALMA-7B-Pretrain \
     --mmt_data_path ./human_written_data/ \
     --do_train \
     --do_eval \
