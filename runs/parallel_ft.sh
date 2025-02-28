@@ -14,7 +14,7 @@ accelerate launch --main_process_port ${port} --config_file configs/deepspeed_tr
     --language_pairs ${pairs} \
     --load_best_model_at_end \
     --low_cpu_mem_usage \
-    --bf16 \
+    --fp16 \
     --learning_rate 2e-5 \
     --weight_decay 0.01 \
     --gradient_accumulation_steps 8 \
