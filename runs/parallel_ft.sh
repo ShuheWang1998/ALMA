@@ -1,11 +1,12 @@
-OUTPUT_DIR=${1:-"./alma-7b-parallel-ft"}
-pairs=${2:-"de-en,cs-en,is-en,zh-en,ru-en,en-de,en-cs,en-is,en-zh,en-ru"}
+OUTPUT_DIR=${1:-"./results/alma-7b-pretrain-parallel-ft-full"}
+# pairs=${2:-"de-en,cs-en,is-en,zh-en,ru-en,en-de,en-cs,en-is,en-zh,en-ru"}
+pairs=${2:-"de-en"}
 
 # random port between 30000 and 50000
 port=$(( RANDOM % (50000 - 30000 + 1 ) + 30000 ))
-accelerate launch --main_process_port ${port} --config_file configs/deepspeed_train_config.yaml \
+CUDA_VISIBLE_DEVICES=0,1,2,3,5,6,7 accelerate launch --main_process_port ${port} --config_file configs/deepspeed_train_config.yaml \
      run_llmmt.py \
-    --model_name_or_path haoranxu/ALMA-7B-Pretrain \
+    --model_name_or_path ./official_models/ALMA-7B-Pretrain \
     --mmt_data_path ./human_written_data/ \
     --do_train \
     --do_eval \
@@ -13,16 +14,16 @@ accelerate launch --main_process_port ${port} --config_file configs/deepspeed_tr
     --language_pairs ${pairs} \
     --load_best_model_at_end \
     --low_cpu_mem_usage \
-    --fp16 \
+    --bf16 \
     --learning_rate 2e-5 \
     --weight_decay 0.01 \
-    --gradient_accumulation_steps 4 \
+    --gradient_accumulation_steps 8 \
     --lr_scheduler_type inverse_sqrt \
     --warmup_ratio 0.01 \
     --ignore_pad_token_for_loss \
     --ignore_prompt_token_for_loss \
-    --per_device_train_batch_size 4 \
-    --per_device_eval_batch_size 4 \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 2 \
     --evaluation_strategy steps \
     --eval_steps 0.1 \
     --save_strategy steps \
